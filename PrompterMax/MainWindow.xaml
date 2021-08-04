@@ -1,0 +1,32 @@
+﻿<Window x:Class="PrompterMax.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PrompterMax"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem x:Name="PrompterTab" Header="Prompter">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem x:Name="CreatePromptsTab" Header="CreatePrompts">
+                <Grid Background="#FFE5E5E5">
+                    <GroupBox Header="Create" Margin="0,0,0,251"/>
+                    <TextBox x:Name="createPromptsInput" HorizontalAlignment="Left" Margin="165,38,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\sherlock.txt" VerticalAlignment="Top" Width="535"/>
+                    <TextBox x:Name="createPromptsOutput" HorizontalAlignment="Left" Margin="165,69,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\sherlockReadable.txt" VerticalAlignment="Top" Width="535"/>
+                    <Button x:Name="createPromptsInputLoad" Content="Load" HorizontalAlignment="Left" Margin="705,37,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+                    <Button x:Name="createPromptsOutputLoad" Content="Load" HorizontalAlignment="Left" Margin="705,68,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+                    <Label Content="Text to Turn into Prompts" HorizontalAlignment="Left" Margin="15,34,0,0" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Margin="40,69,0,0" TextWrapping="Wrap" Text="Save Prompts to File" VerticalAlignment="Top" Width="120" BorderBrush="{x:Null}" Background="{x:Null}"/>
+                    <CheckBox x:Name="createPromptsKeepWav" Content="Keep Wav Output" HorizontalAlignment="Left" Margin="510,100,0,0" VerticalAlignment="Top" IsEnabled="False"/>
+                    <Button x:Name="createPrompts" Content="Create Prompts" HorizontalAlignment="Left" Margin="649,98,0,0" VerticalAlignment="Top" Click="CreatePrompts_Click"/>
+                    <GroupBox Header="Output" Margin="0,160,0,0">
+                        <TextBlock x:Name="createPromptsResults" HorizontalAlignment="Left" TextWrapping="Wrap" Width="784"/>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
