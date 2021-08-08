@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Utilities;
 
 namespace PrompterMax
 {
@@ -21,6 +22,8 @@ namespace PrompterMax
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Recognize recognizer;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -42,5 +45,33 @@ namespace PrompterMax
             File.WriteAllText(createPromptsOutput.Text, toSave);
             output("saved");
         }
+
+        private void RecordButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (recognizer == null)
+            {
+                recognizer = new Recognize();
+                recognizer.AudioAvailable += Recognizer_AudioAvailable;
+            }
+
+            if (recognizer.Status == Status.On)
+            {
+                recognizer.Stop();
+                recordButton.Content = "Auto Next";
+                return;
+            }
+
+            recognizer.Phrase = prompt.Text.Trim() == "" ? "This is a test." : prompt.Text;
+            recognizer.SaveTo = @"C:\Users\edwar\Downloads\thisIsATest.wav";
+
+            recognizer.Start();
+            recordButton.Content = "Stop";
+        }
+
+        private void Recognizer_AudioAvailable(object sender, RecognizeAudioEventArgs e)
+        {
+            Console.WriteLine("Got it");
+        }
+
     }
 }
