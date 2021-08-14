@@ -31,15 +31,19 @@ namespace PrompterMax
 
         private void CreatePrompts_Click(object sender, RoutedEventArgs e)
         {
-            var path = createPromptsInput.Text;
-            var extractor = new Utilities.ExtractPrompts();
-            
-            void output(string t) => createPromptsResults.Text += createPromptsResults.Text + Environment.NewLine + t;
+            string path = createPromptsInput.Text;
+            ExtractPrompts extractor = new ExtractPrompts();
+
+            void output(string t)
+            {
+                createPromptsResults.Text += createPromptsResults.Text + Environment.NewLine + t;
+            }
+
             extractor.Logger = output;
 
-            var results = extractor.Extract(File.ReadAllText(path));
+            List<string> results = extractor.Extract(File.ReadAllText(path));
 
-            var toSave = string.Join(Environment.NewLine, results);
+            string toSave = string.Join(Environment.NewLine, results);
 
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);
