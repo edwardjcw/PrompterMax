@@ -47,6 +47,7 @@
     <Compile Include="Recognize.cs" />
     <Compile Include="RecognizeAudioEventArgs.cs" />
     <Compile Include="RecognizeAudioEventHandler.cs" />
+    <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

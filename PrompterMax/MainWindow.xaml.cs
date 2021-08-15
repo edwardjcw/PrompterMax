@@ -43,7 +43,10 @@ namespace PrompterMax
 
             List<string> results = extractor.Extract(File.ReadAllText(path));
 
-            string toSave = string.Join(Environment.NewLine, results);
+            // todo: make sure the version is correct and within 1 - 99999
+            bool versionGood = uint.TryParse(versionInput.Text, out uint version);
+
+            string toSave = Utilities.Utilities.TransformForOutput(results, versionGood ? version : 1);
 
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);

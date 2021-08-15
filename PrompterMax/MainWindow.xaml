@@ -32,6 +32,8 @@
                     <GroupBox Header="Output" Margin="0,160,0,0" Grid.ColumnSpan="2">
                         <TextBlock x:Name="createPromptsResults" HorizontalAlignment="Left" TextWrapping="Wrap" Width="784"/>
                     </GroupBox>
+                    <Label Content="Version" HorizontalAlignment="Left" Margin="68,96,0,0" VerticalAlignment="Top" Grid.Column="1"/>
+                    <TextBox x:Name="versionInput" HorizontalAlignment="Left" Margin="122,100,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="72" Grid.Column="1"/>
                 </Grid>
             </TabItem>
         </TabControl>
