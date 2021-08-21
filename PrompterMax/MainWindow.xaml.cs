@@ -90,5 +90,29 @@ namespace PrompterMax
         {
             location.Content = $"{at} of {count}";
         }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            prompter.Next();
+        }
+
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            prompter.Previous();
+        }
+
+        private void GotoButton_Click(object sender, RoutedEventArgs e)
+        {
+            bool success = int.TryParse(gotoInput.Text, out int result);
+            if (!success || result >= prompter.Count || result < 0) // TODO: user one-base for display
+            {
+                gotoInput.Text = "";
+                _ = MessageBox.Show("Not a number or out of bounds");
+                return;
+            }
+
+            prompter.Goto(result);
+            gotoInput.Text = "";
+        }
     }
 }

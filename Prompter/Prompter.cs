@@ -34,22 +34,41 @@ namespace Prompter
 
             prompts = LoadPrompts(promptFile, wavDirectory);
             Prompt lastPromptWithWav = GetLastPromptWithWav(prompts);
-            Next(lastPromptWithWav, prompts);
+            Next(lastPromptWithWav);
         }
 
-        private void Next(Prompt prompt, SortedDictionary<int, Prompt> prompts)
+        private void Next(Prompt prompt)
         {
             at = prompt == Prompt.Empty || prompt.Id == prompts.Count - 1 ? 0 : prompt.Id + 1;
             string previous = at == 0 ? "" : prompts[at - 1].Normalized;
             string current = prompts[at].Normalized;
             string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnNext(at, previous, current, next);
+            OnMove(at, previous, current, next);
+        }
+        private void Previous(Prompt prompt)
+        {
+            at = prompt == Prompt.Empty || prompt.Id == 0 ? 0 : prompt.Id - 1;
+            string previous = at == 0 ? "" : prompts[at - 1].Normalized;
+            string current = prompts[at].Normalized;
+            string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
+            OnMove(at, previous, current, next);
         }
 
-        private void OnNext(int index, string previous, string current, string next)
+        private void Goto(Prompt prompt)
+        {
+            at = prompt.Id;
+            string previous = at == 0 ? "" : prompts[at - 1].Normalized;
+            string current = prompts[at].Normalized;
+            string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
+            OnMove(at, previous, current, next);
+        }
+
+        private void OnMove(int index, string previous, string current, string next)
         {
             PromptChanged?.Invoke(this, new PrompterEventArgs(index, previous, current, next));
         }
+
+
 
         private Prompt GetLastPromptWithWav(SortedDictionary<int, Prompt> prompts)
         {
@@ -82,6 +101,39 @@ namespace Prompter
 
             return prompt;
 
+        }
+
+        public void Next()
+        {
+            bool success = prompts.TryGetValue(At, out Prompt result);
+            if (!success)
+            {
+                return;
+            }
+
+            Next(result);
+        }
+
+        public void Previous()
+        {
+            bool success = prompts.TryGetValue(At, out Prompt result);
+            if (!success)
+            {
+                return;
+            }
+
+            Previous(result);
+        }
+
+        public void Goto(int index)
+        {
+            bool success = prompts.TryGetValue(index, out Prompt result);
+            if (!success)
+            {
+                return;
+            }
+
+            Goto(result);
         }
     }
 }
