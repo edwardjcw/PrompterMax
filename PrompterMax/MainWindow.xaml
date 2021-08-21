@@ -24,7 +24,7 @@
                     <CheckBox Content="Auto Advance" HorizontalAlignment="Left" Margin="417,260,0,0" VerticalAlignment="Top"/>
                     <Label Content="Metadata Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="loadMetaDataPath" HorizontalAlignment="Left" Margin="102,14,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\sherlockReadable.txt" VerticalAlignment="Top" Width="646"/>
-                    <Button x:Name="loadMetadataButton" Content="Load" HorizontalAlignment="Left" Margin="754,30,0,0" VerticalAlignment="Top"/>
+                    <Button x:Name="loadMetadataButton" Content="Load" HorizontalAlignment="Left" Margin="754,30,0,0" VerticalAlignment="Top" Click="LoadMetadataButton_Click"/>
                     <Label Content="Wav Directory" HorizontalAlignment="Left" Margin="13,41,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="wavDirectory" HorizontalAlignment="Left" Margin="102,45,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\wavOutput" VerticalAlignment="Top" Width="646"/>
                 </Grid>

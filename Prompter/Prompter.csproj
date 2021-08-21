@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Prompt.cs" />
+    <Compile Include="PromptChangedEventHandler.cs" />
     <Compile Include="Prompter.cs" />
+    <Compile Include="PrompterEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

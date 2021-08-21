@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Utilities
 {
@@ -23,6 +24,11 @@ namespace Utilities
                 output.Add($"{id}|{text}|{text}");
             }
             return string.Join(Environment.NewLine, output);
+        }
+
+        public static bool WavExists(string wavPath)
+        {
+            return File.Exists(wavPath);
         }
     }
 }

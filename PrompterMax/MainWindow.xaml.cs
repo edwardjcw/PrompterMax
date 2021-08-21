@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Utilities;
 
 namespace PrompterMax
@@ -23,6 +12,7 @@ namespace PrompterMax
     public partial class MainWindow : Window
     {
         private Recognize recognizer;
+        private Prompter.Prompter prompter;
 
         public MainWindow()
         {
@@ -80,5 +70,25 @@ namespace PrompterMax
             Console.WriteLine("Got it");
         }
 
+        private void LoadMetadataButton_Click(object sender, RoutedEventArgs e)
+        {
+            prompter = new Prompter.Prompter();
+            prompter.PromptChanged += Prompter_PromptChanged;
+            prompter.Load(loadMetaDataPath.Text, wavDirectory.Text);
+        }
+
+        private void Prompter_PromptChanged(object sender, Prompter.PrompterEventArgs e)
+        {
+            SetLocation(e.Index, prompter.Count);
+            previous.Content = e.Previous;
+            current.Content = e.Current;
+            next.Content = e.Next;
+            playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+        }
+
+        private void SetLocation(int at, int count)
+        {
+            location.Content = $"{at} of {count}";
+        }
     }
 }

@@ -95,6 +95,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Prompter\Prompter.csproj">
+      <Project>{ae5440c7-17d0-434b-8fcb-8db0be4f62d0}</Project>
+      <Name>Prompter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{2dc7a187-b3fb-4281-9f57-317ec10983df}</Project>
       <Name>Utilities</Name>
