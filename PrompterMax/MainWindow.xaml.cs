@@ -6,6 +6,14 @@ using Utilities;
 
 namespace PrompterMax
 {
+    public enum Recording
+    {
+        None,
+        ActiveAuto,
+        ActiveManual
+    }
+
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -13,6 +21,7 @@ namespace PrompterMax
     {
         private Recognize recognizer;
         private Prompter.Prompter prompter;
+        private Recording recording;
 
         public MainWindow()
         {
@@ -68,6 +77,7 @@ namespace PrompterMax
         private void Recognizer_AudioAvailable(object sender, RecognizeAudioEventArgs e)
         {
             Console.WriteLine("Got it");
+            prompter.Next();
         }
 
         private void LoadMetadataButton_Click(object sender, RoutedEventArgs e)
@@ -83,7 +93,22 @@ namespace PrompterMax
             previous.Content = e.Previous;
             current.Content = e.Current;
             next.Content = e.Next;
-            playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+            // === CASE 0: No recording occuring
+            if (recording == Recording.None)
+            {
+                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                return;
+            }
+            // === CASE 1: Manual recording taking place
+            if (recording == Recording.ActiveManual)
+            {
+                return; // TODO: set up manual recording
+            }
+            // === CASE 2: Auto recording taking place
+            recognizer.Stop();
+            recognizer.Phrase = prompter.Normalized.Trim() == "" ? "This is a test." : prompter.Normalized;
+            recognizer.SaveTo = prompter.WavPath;
+            recognizer.Start();
         }
 
         private void SetLocation(int at, int count)
@@ -113,6 +138,43 @@ namespace PrompterMax
 
             prompter.Goto(result);
             gotoInput.Text = "";
+        }
+
+        private void RecordingButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (autoAdvance.IsChecked == true)
+            {
+                AutoRecording();
+            }
+
+
+
+        }
+
+        private void AutoRecording()
+        {
+            if (recognizer == null)
+            {
+                recognizer = new Recognize();
+                recognizer.AudioAvailable += Recognizer_AudioAvailable;
+            }
+
+            if (recognizer.Status == Status.On)
+            {
+                recognizer.Stop();
+                recordingButton.Content = "Record";
+                autoAdvance.IsEnabled = true;
+                recording = Recording.None;
+                return;
+            }
+
+            recognizer.Phrase = prompter.Normalized.Trim() == "" ? "This is a test." : prompter.Normalized;
+            recognizer.SaveTo = prompter.WavPath;
+
+            recognizer.Start();
+            recordingButton.Content = "Stop";
+            autoAdvance.IsEnabled = false;
+            recording = Recording.ActiveAuto;
         }
     }
 }

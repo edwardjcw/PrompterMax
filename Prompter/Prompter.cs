@@ -27,6 +27,15 @@ namespace Prompter
             }
         }
 
+        public string Normalized
+        {
+            get
+            {
+                bool success = prompts.TryGetValue(At, out Prompt result);
+                return success ? result.Normalized : "";
+            }
+        }
+
         public void Load(string promptFile, string wavDirectory)
         {
             this.promptFile = promptFile;
