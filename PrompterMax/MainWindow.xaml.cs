@@ -22,6 +22,7 @@ namespace PrompterMax
         private Recognize recognizer;
         private Prompter.Prompter prompter;
         private Recording recording;
+        private AudioHelper audioHelper;
 
         public MainWindow()
         {
@@ -50,28 +51,6 @@ namespace PrompterMax
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);
             output("saved");
-        }
-
-        private void RecordButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (recognizer == null)
-            {
-                recognizer = new Recognize();
-                recognizer.AudioAvailable += Recognizer_AudioAvailable;
-            }
-
-            if (recognizer.Status == Status.On)
-            {
-                recognizer.Stop();
-                recordButton.Content = "Auto Next";
-                return;
-            }
-
-            recognizer.Phrase = prompt.Text.Trim() == "" ? "This is a test." : prompt.Text;
-            recognizer.SaveTo = @"C:\Users\edwar\Downloads\thisIsATest.wav";
-
-            recognizer.Start();
-            recordButton.Content = "Stop";
         }
 
         private void Recognizer_AudioAvailable(object sender, RecognizeAudioEventArgs e)
@@ -145,9 +124,22 @@ namespace PrompterMax
             if (autoAdvance.IsChecked == true)
             {
                 AutoRecording();
+                return;
             }
 
+            if (audioHelper == null)
+            {
+                audioHelper = new AudioHelper();
+                audioHelper.AudioChanged += AudioHelper_AudioChanged;
+            }
 
+            if (audioHelper.RecordingStatus == RecordingStatus.Stopped)
+            {
+                audioHelper.Record(prompter.WavPath);
+                return;
+            }
+
+            audioHelper.StopRecording();
 
         }
 
@@ -165,6 +157,7 @@ namespace PrompterMax
                 recordingButton.Content = "Record";
                 autoAdvance.IsEnabled = true;
                 recording = Recording.None;
+                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
                 return;
             }
 
@@ -175,6 +168,53 @@ namespace PrompterMax
             recordingButton.Content = "Stop";
             autoAdvance.IsEnabled = false;
             recording = Recording.ActiveAuto;
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (audioHelper == null)
+            {
+                audioHelper = new AudioHelper();
+                audioHelper.AudioChanged += AudioHelper_AudioChanged;
+            }
+
+            if (audioHelper.PlaybackStatus == PlaybackStatus.Stopped)
+            {
+                audioHelper.Play(prompter.WavPath);
+                return;
+            }
+
+            audioHelper.StopPlaying();
+        }
+
+        private void AudioHelper_AudioChanged(object sender, AudioHelperEventArgs e)
+        {
+            if (e.Status == AudioStatus.PlayStopped)
+            {
+                playButton.Content = "Play";
+                recordingButton.IsEnabled = true;
+            }
+
+            if (e.Status == AudioStatus.Playing)
+            {
+                playButton.Content = "Stop";
+                recordingButton.IsEnabled = false;
+            }
+
+            if (e.Status == AudioStatus.RecordStopped)
+            {
+                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                recordingButton.Content = "Record";
+                autoAdvance.IsEnabled = true;
+            }
+
+            if (e.Status == AudioStatus.Recording)
+            {
+                playButton.IsEnabled = false;
+                recordingButton.Content = "Stop";
+                autoAdvance.IsEnabled = false;
+            }
+
         }
     }
 }
