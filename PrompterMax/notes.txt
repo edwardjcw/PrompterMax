@@ -1,0 +1,7 @@
+8/21/2021
+
+I stopped with a lot of what needs to be done, done. For some reason the manual recording goes through the motions but doesn't actually
+record (or at least it doesn't appear to record anything). So that needs to be looked at.
+
+Additionally, the next/previous/goto buttons needs to stop the recording. I don't think we should have auto next record since we have
+the auto advance technology.

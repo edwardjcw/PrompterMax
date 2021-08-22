@@ -34,7 +34,14 @@ namespace Utilities
             PlaybackStatus = PlaybackStatus.Stopped;
             recorder = new WaveInEvent();
             recorder.RecordingStopped += Recorder_RecordingStopped;
+            recorder.DataAvailable += Recorder_DataAvailable;
+            recorder.WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(48000, 2);
             RecordingStatus = RecordingStatus.Stopped;
+        }
+
+        private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            writer.Write(e.Buffer, 0, e.BytesRecorded);
         }
 
         private void Recorder_RecordingStopped(object sender, StoppedEventArgs e)
