@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Speech.Recognition;
+using NAudio;
+using NAudio.Wave;
 
 namespace Utilities
 {
@@ -24,6 +26,9 @@ namespace Utilities
     {
         private readonly SpeechRecognitionEngine recognizer;
         private string phrase;
+        private WaveInEvent recorder;
+        private Stream audioSource;
+        System.Speech.AudioFormat.SpeechAudioFormatInfo audioFormat;
 
         public string Phrase
         {
@@ -51,7 +56,36 @@ namespace Utilities
         {
             recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
             recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
-            recognizer.SetInputToDefaultAudioDevice();
+            recorder = new WaveInEvent();
+            recorder.DeviceNumber = 1;
+            recorder.WaveFormat = recorder.WaveFormat.AsStandardWaveFormat();
+            //WaveFormat wavFormat = recorder.WaveFormat; // WaveFormat.CreateIeeeFloatWaveFormat(16000, 2);
+            //recorder.WaveFormat = WaveFormat.CreateCustomFormat(wavFormat.Encoding, wavFormat.SampleRate, wavFormat.Channels, wavFormat.AverageBytesPerSecond, wavFormat.BlockAlign, wavFormat.BitsPerSample);
+            recorder.DataAvailable += Recorder_DataAvailable;
+            recorder.RecordingStopped += Recorder_RecordingStopped;
+            //recognizer.SetInputToDefaultAudioDevice();
+            audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(16000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
+
+        }
+
+        private void Recorder_RecordingStopped(object sender, StoppedEventArgs e)
+        {
+            using (FileStream outputStream = new FileStream(@"C:\Users\edwar\Downloads\wavOutput\000.wav", FileMode.Create))
+            {
+                audioSource.CopyTo(outputStream);
+            }
+
+
+
+            audioSource?.Dispose();
+            audioSource = null;
+            Console.WriteLine("recording stopped");
+        }
+
+        private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            audioSource.Write(e.Buffer, 0, e.BytesRecorded);
+            Console.WriteLine($"added to buffer {e.BytesRecorded}, {audioSource.Length}");
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -83,6 +117,11 @@ namespace Utilities
 
         public void Start()
         {
+            audioSource = new MemoryStream();
+            recognizer.SetInputToAudioStream(audioSource, audioFormat);
+           
+            //TODO: perhaps something needs to be done to make it a wav file first
+            recorder.StartRecording();
             recognizer.RecognizeAsync(RecognizeMode.Multiple);
             Status = Status.On;
         }
@@ -90,6 +129,7 @@ namespace Utilities
         public void Stop()
         {
             recognizer.RecognizeAsyncCancel();
+            recorder.StopRecording();
             Status = Status.Off;
         }
     }

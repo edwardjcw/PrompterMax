@@ -5,3 +5,8 @@ record (or at least it doesn't appear to record anything). So that needs to be l
 
 Additionally, the next/previous/goto buttons needs to stop the recording. I don't think we should have auto next record since we have
 the auto advance technology.
+
+8/22/2021
+
+The main branch works. My issue now is getting the sample rate higher on the auto next feature. I'm trying to use memory streams but
+it doesn't seem to fill up with anything.
