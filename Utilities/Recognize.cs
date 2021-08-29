@@ -27,7 +27,8 @@ namespace Utilities
         private readonly SpeechRecognitionEngine recognizer;
         private string phrase;
         private IWaveIn recorder;
-        private Stream audioSource;
+        private Stream continuousAudioSource;
+        private Stream readyForUseAudioStream;
         private RawSourceWaveStream resourceWavStream;
         private WaveStream waveStream;
         private WaveFileWriter waveFileWriter;
@@ -82,8 +83,8 @@ namespace Utilities
 
             using (FileStream outputStream = new FileStream(@"C:\Users\edwar\Downloads\wavOutput\000.wav", FileMode.Create))
             {
-                audioSource.Position = 0;
-                audioSource.CopyTo(outputStream);
+                continuousAudioSource.Position = 0;
+                continuousAudioSource.CopyTo(outputStream);
                 outputStream.Close();
             }
 
@@ -96,18 +97,42 @@ namespace Utilities
             resourceWavStream?.Dispose();
             resourceWavStream = null;
 
-            audioSource?.Dispose();
-            audioSource = null;
+            continuousAudioSource?.Dispose();
+            continuousAudioSource = null;
             
+            readyForUseAudioStream?.Dispose();
+            readyForUseAudioStream = null;
+
             Console.WriteLine("recording stopped");
         }
 
         private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
         {
-            
+            if (waveFileWriter == null)
+            {
+                return;
+            }
+
             waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
-            Console.WriteLine($"added to buffer {e.BytesRecorded}, {audioSource.Length}; {audioSource.Position}");
+            Console.WriteLine($"added to buffer {e.BytesRecorded}, {continuousAudioSource.Length}; {continuousAudioSource.Position};  {waveFileWriter.TotalTime}; {recognizer.RecognizerAudioPosition}");
             waveFileWriter.Flush();
+
+            if (waveFileWriter.TotalTime.TotalSeconds % TimeSpan.FromSeconds(5).TotalSeconds == 0) {
+                recognizer.RecognizeAsyncCancel();
+                var currentPosition = continuousAudioSource.Position;
+                continuousAudioSource.Position = 0;
+                continuousAudioSource.CopyTo(readyForUseAudioStream);
+                readyForUseAudioStream.Flush();
+                readyForUseAudioStream.Position = 0;
+                recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
+                continuousAudioSource.Position = currentPosition;
+                recognizer.RecognizeAsync();
+            }
+            //if (recognizer.AudioSignalProblemOccurred == AudioSignalProblem.)
+
+            //readyForUseAudioStream = new MemoryStream();
+            //recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
+
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -139,16 +164,18 @@ namespace Utilities
 
         public void Start()
         {
-            audioSource = new MemoryStream();
+            continuousAudioSource = new MemoryStream();
+
             //audioSource.Position = 0;
             //waveStream = WaveFormatConversionStream.CreatePcmStream(audioSource);
-            waveFileWriter = new WaveFileWriter(audioSource, recorder.WaveFormat);
+            waveFileWriter = new WaveFileWriter(continuousAudioSource, recorder.WaveFormat);
             
             //resourceWavStream = new RawSourceWaveStream(waveFileWriter, recorder.WaveFormat);
             
             //waveFileReader = new WaveFileReader(resourceWavStream);
-            recognizer.SetInputToAudioStream(audioSource, audioFormat);
-           
+            readyForUseAudioStream = new MemoryStream();
+            recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
+            //recognizer.SetInputToWaveStream(continuousAudioSource);
             //TODO: perhaps something needs to be done to make it a wav file first
             recorder.StartRecording();
             recognizer.RecognizeAsync(RecognizeMode.Multiple);

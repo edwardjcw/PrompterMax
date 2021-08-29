@@ -26,4 +26,6 @@ but doesn't appear to work. Getting 0 bytes.
 
 8/29/2021
 
-Idea is to create a new fully converted wav -- at first just do one, then do every time data is available
+FINALLY got the thing to record the 000 file and even record voice by setting a 5 second interval between giving recognizer more audio stream.
+It works but breaks down once recognition happens. This is likely because recognition is done async. We get recorder stopped when we shouldn't. LINE 87 mainwindow, we do stop the recognizer. This causes a cascade of things, including making null the wave file writer.
+Why doesn't the start line below that restart everything?
