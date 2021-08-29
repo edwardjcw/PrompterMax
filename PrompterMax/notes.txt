@@ -29,3 +29,6 @@ but doesn't appear to work. Getting 0 bytes.
 FINALLY got the thing to record the 000 file and even record voice by setting a 5 second interval between giving recognizer more audio stream.
 It works but breaks down once recognition happens. This is likely because recognition is done async. We get recorder stopped when we shouldn't. LINE 87 mainwindow, we do stop the recognizer. This causes a cascade of things, including making null the wave file writer.
 Why doesn't the start line below that restart everything?
+
+Might call it quits on the 48000 ... I got it to record, although it's with that darn pause for five seconds, which I don't like, AND to make 
+things worse, even after I did all that, the damn thing only records at 16k ... all that work and it records the same amount as before! >:

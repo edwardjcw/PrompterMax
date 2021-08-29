@@ -63,30 +63,35 @@ namespace Utilities
             recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
             recorder = new WaveInEvent();
             
-            recorder.WaveFormat = recorder.WaveFormat.AsStandardWaveFormat();
-            //recorder.WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(16000, 2);
-            //recorder.WaveFormat = WaveFormat.CreateCustomFormat(wavFormat.Encoding, wavFormat.SampleRate, wavFormat.Channels, wavFormat.AverageBytesPerSecond, wavFormat.BlockAlign, wavFormat.BitsPerSample);
+            //recorder.WaveFormat = recorder.WaveFormat.AsStandardWaveFormat();
+            WaveFormat wavFormat = WaveFormat.CreateIeeeFloatWaveFormat(48000, 1);
+            recorder.WaveFormat = WaveFormat.CreateCustomFormat(WaveFormatEncoding.Pcm, wavFormat.SampleRate, wavFormat.Channels, wavFormat.AverageBytesPerSecond / 2, wavFormat.BlockAlign / 2, wavFormat.BitsPerSample / 2);
             recorder.DataAvailable += Recorder_DataAvailable;
             recorder.RecordingStopped += Recorder_RecordingStopped;
             //recognizer.SetInputToDefaultAudioDevice();
-            audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(8000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
+            audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(48000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
 
         }
 
         private void Recorder_RecordingStopped(object sender, StoppedEventArgs e)
         {
+            if (waveFileWriter == null)
+            {
+                return;
+            }
+
             //audioSource.Flush();
             
             //waveFileWriter?.Flush();
             //var waveReader = new WaveFileReader(audioSource);
             
 
-            using (FileStream outputStream = new FileStream(@"C:\Users\edwar\Downloads\wavOutput\000.wav", FileMode.Create))
-            {
-                continuousAudioSource.Position = 0;
-                continuousAudioSource.CopyTo(outputStream);
-                outputStream.Close();
-            }
+            //using (FileStream outputStream = new FileStream(@"C:\Users\edwar\Downloads\wavOutput\000.wav", FileMode.Create))
+            //{
+            //    continuousAudioSource.Position = 0;
+            //    continuousAudioSource.CopyTo(outputStream);
+            //    outputStream.Close();
+            //}
 
             waveFileWriter?.Dispose();
             waveFileWriter = null;
@@ -110,7 +115,13 @@ namespace Utilities
         {
             if (waveFileWriter == null)
             {
-                return;
+                continuousAudioSource = new MemoryStream();
+                waveFileWriter = new WaveFileWriter(continuousAudioSource, recorder.WaveFormat);
+                readyForUseAudioStream = new MemoryStream();
+                recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
+
+                recognizer.RecognizeAsync(RecognizeMode.Multiple);
+                Status = Status.On;
             }
 
             waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
@@ -128,11 +139,6 @@ namespace Utilities
                 continuousAudioSource.Position = currentPosition;
                 recognizer.RecognizeAsync();
             }
-            //if (recognizer.AudioSignalProblemOccurred == AudioSignalProblem.)
-
-            //readyForUseAudioStream = new MemoryStream();
-            //recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
-
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -148,6 +154,7 @@ namespace Utilities
             {
                 e.Result.Audio?.WriteToWaveStream(outputStream);
                 outputStream.Close();
+                
                 OnRecognition(phrase, SaveTo);
             }
         }
@@ -164,28 +171,14 @@ namespace Utilities
 
         public void Start()
         {
-            continuousAudioSource = new MemoryStream();
 
-            //audioSource.Position = 0;
-            //waveStream = WaveFormatConversionStream.CreatePcmStream(audioSource);
-            waveFileWriter = new WaveFileWriter(continuousAudioSource, recorder.WaveFormat);
-            
-            //resourceWavStream = new RawSourceWaveStream(waveFileWriter, recorder.WaveFormat);
-            
-            //waveFileReader = new WaveFileReader(resourceWavStream);
-            readyForUseAudioStream = new MemoryStream();
-            recognizer.SetInputToAudioStream(readyForUseAudioStream, audioFormat);
-            //recognizer.SetInputToWaveStream(continuousAudioSource);
-            //TODO: perhaps something needs to be done to make it a wav file first
             recorder.StartRecording();
-            recognizer.RecognizeAsync(RecognizeMode.Multiple);
-            Status = Status.On;
         }
 
         public void Stop()
         {
+            recorder.StopRecording();            
             recognizer.RecognizeAsyncCancel();
-            recorder.StopRecording();
             Status = Status.Off;
         }
     }
