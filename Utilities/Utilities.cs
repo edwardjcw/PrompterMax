@@ -7,7 +7,7 @@ using System.IO;
 
 namespace Utilities
 {
-    public class Utilities
+    public static class Utilities
     {
         public static string TransformForOutput(List<string> texts, uint version)
         {

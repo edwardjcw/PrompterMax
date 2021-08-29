@@ -10,3 +10,20 @@ the auto advance technology.
 
 The main branch works. My issue now is getting the sample rate higher on the auto next feature. I'm trying to use memory streams but
 it doesn't seem to fill up with anything.
+
+8/24/2021
+
+Focus on the RawSourceWaveStream.
+
+8/26/2021
+
+Perhaps focus on the reason it's not writing to file. It seems there's data in there, so why isn't it writing?
+
+8/27/2021
+
+Fixed the saving part by pushing the position of the stream back to 0 before saving, but still not saving as a wav. Tried WasapiLoopback
+but doesn't appear to work. Getting 0 bytes.
+
+8/29/2021
+
+Idea is to create a new fully converted wav -- at first just do one, then do every time data is available

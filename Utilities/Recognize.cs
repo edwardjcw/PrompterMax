@@ -26,8 +26,12 @@ namespace Utilities
     {
         private readonly SpeechRecognitionEngine recognizer;
         private string phrase;
-        private WaveInEvent recorder;
+        private IWaveIn recorder;
         private Stream audioSource;
+        private RawSourceWaveStream resourceWavStream;
+        private WaveStream waveStream;
+        private WaveFileWriter waveFileWriter;
+        private WaveFileReader waveFileReader;
         System.Speech.AudioFormat.SpeechAudioFormatInfo audioFormat;
 
         public string Phrase
@@ -57,35 +61,53 @@ namespace Utilities
             recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
             recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
             recorder = new WaveInEvent();
-            recorder.DeviceNumber = 1;
+            
             recorder.WaveFormat = recorder.WaveFormat.AsStandardWaveFormat();
-            //WaveFormat wavFormat = recorder.WaveFormat; // WaveFormat.CreateIeeeFloatWaveFormat(16000, 2);
+            //recorder.WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(16000, 2);
             //recorder.WaveFormat = WaveFormat.CreateCustomFormat(wavFormat.Encoding, wavFormat.SampleRate, wavFormat.Channels, wavFormat.AverageBytesPerSecond, wavFormat.BlockAlign, wavFormat.BitsPerSample);
             recorder.DataAvailable += Recorder_DataAvailable;
             recorder.RecordingStopped += Recorder_RecordingStopped;
             //recognizer.SetInputToDefaultAudioDevice();
-            audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(16000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
+            audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(8000, System.Speech.AudioFormat.AudioBitsPerSample.Sixteen, System.Speech.AudioFormat.AudioChannel.Mono);
 
         }
 
         private void Recorder_RecordingStopped(object sender, StoppedEventArgs e)
         {
+            //audioSource.Flush();
+            
+            //waveFileWriter?.Flush();
+            //var waveReader = new WaveFileReader(audioSource);
+            
+
             using (FileStream outputStream = new FileStream(@"C:\Users\edwar\Downloads\wavOutput\000.wav", FileMode.Create))
             {
+                audioSource.Position = 0;
                 audioSource.CopyTo(outputStream);
+                outputStream.Close();
             }
 
+            waveFileWriter?.Dispose();
+            waveFileWriter = null;
 
+            //waveStream.Dispose();
+            //waveStream = null;
+
+            resourceWavStream?.Dispose();
+            resourceWavStream = null;
 
             audioSource?.Dispose();
             audioSource = null;
+            
             Console.WriteLine("recording stopped");
         }
 
         private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
         {
-            audioSource.Write(e.Buffer, 0, e.BytesRecorded);
-            Console.WriteLine($"added to buffer {e.BytesRecorded}, {audioSource.Length}");
+            
+            waveFileWriter.Write(e.Buffer, 0, e.BytesRecorded);
+            Console.WriteLine($"added to buffer {e.BytesRecorded}, {audioSource.Length}; {audioSource.Position}");
+            waveFileWriter.Flush();
         }
 
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -99,7 +121,7 @@ namespace Utilities
 
             using (Stream outputStream = new FileStream(SaveTo, FileMode.Create))
             {
-                e.Result.Audio.WriteToWaveStream(outputStream);
+                e.Result.Audio?.WriteToWaveStream(outputStream);
                 outputStream.Close();
                 OnRecognition(phrase, SaveTo);
             }
@@ -118,6 +140,13 @@ namespace Utilities
         public void Start()
         {
             audioSource = new MemoryStream();
+            //audioSource.Position = 0;
+            //waveStream = WaveFormatConversionStream.CreatePcmStream(audioSource);
+            waveFileWriter = new WaveFileWriter(audioSource, recorder.WaveFormat);
+            
+            //resourceWavStream = new RawSourceWaveStream(waveFileWriter, recorder.WaveFormat);
+            
+            //waveFileReader = new WaveFileReader(resourceWavStream);
             recognizer.SetInputToAudioStream(audioSource, audioFormat);
            
             //TODO: perhaps something needs to be done to make it a wav file first

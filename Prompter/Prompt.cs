@@ -10,19 +10,8 @@ namespace Prompter
         public string Normalized { get; private set; }
         public string WavPath { get; private set; }
 
-        private static Prompt empty;
-        public static Prompt Empty
-        {
-            get
-            {
-                if (empty == null)
-                {
-                    empty = new Prompt(-1, "", "", "", "");
-                }
-                return empty;
-
-            }
-        }
+        private static Prompt s_Empty;
+        public static Prompt Empty => s_Empty ?? (s_Empty = new Prompt(-1, "", "", "", ""));
 
         public Prompt(int id, string name, string transcription, string normalized, string wavPath)
         {
