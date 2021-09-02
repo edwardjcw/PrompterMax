@@ -10,9 +10,9 @@
             Next = next;
         }
 
-        public int Index { get; private set; }
-        public string Previous { get; private set; }
-        public string Current { get; private set; }
-        public string Next { get; private set; }
+        public int Index { get; }
+        public string Previous { get; }
+        public string Current { get; }
+        public string Next { get; }
     }
 }

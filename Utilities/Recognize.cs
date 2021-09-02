@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Speech.Recognition;
 
@@ -65,7 +61,7 @@ namespace Utilities
 
             using (Stream outputStream = new FileStream(SaveTo, FileMode.Create))
             {
-                e.Result.Audio.WriteToWaveStream(outputStream);
+                e.Result.Audio?.WriteToWaveStream(outputStream);
                 outputStream.Close();
                 OnRecognition(phrase, SaveTo);
             }

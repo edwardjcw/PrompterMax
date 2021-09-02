@@ -34,12 +34,12 @@ namespace PrompterMax
             string path = createPromptsInput.Text;
             ExtractPrompts extractor = new ExtractPrompts();
 
-            void output(string t)
+            void Output(string t)
             {
                 createPromptsResults.Text += createPromptsResults.Text + Environment.NewLine + t;
             }
 
-            extractor.Logger = output;
+            extractor.Logger = Output;
 
             List<string> results = extractor.Extract(File.ReadAllText(path));
 
@@ -50,7 +50,7 @@ namespace PrompterMax
 
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);
-            output("saved");
+            Output("saved");
         }
 
         private void Recognizer_AudioAvailable(object sender, RecognizeAudioEventArgs e)
@@ -189,32 +189,27 @@ namespace PrompterMax
 
         private void AudioHelper_AudioChanged(object sender, AudioHelperEventArgs e)
         {
-            if (e.Status == AudioStatus.PlayStopped)
+            switch (e.Status)
             {
-                playButton.Content = "Play";
-                recordingButton.IsEnabled = true;
+                case AudioStatus.PlayStopped:
+                    playButton.Content = "Play";
+                    recordingButton.IsEnabled = true;
+                    break;
+                case AudioStatus.Playing:
+                    playButton.Content = "Stop";
+                    recordingButton.IsEnabled = false;
+                    break;
+                case AudioStatus.RecordStopped:
+                    playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                    recordingButton.Content = "Record";
+                    autoAdvance.IsEnabled = true;
+                    break;
+                case AudioStatus.Recording:
+                    playButton.IsEnabled = false;
+                    recordingButton.Content = "Stop";
+                    autoAdvance.IsEnabled = false;
+                    break;
             }
-
-            if (e.Status == AudioStatus.Playing)
-            {
-                playButton.Content = "Stop";
-                recordingButton.IsEnabled = false;
-            }
-
-            if (e.Status == AudioStatus.RecordStopped)
-            {
-                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
-                recordingButton.Content = "Record";
-                autoAdvance.IsEnabled = true;
-            }
-
-            if (e.Status == AudioStatus.Recording)
-            {
-                playButton.IsEnabled = false;
-                recordingButton.Content = "Stop";
-                autoAdvance.IsEnabled = false;
-            }
-
         }
     }
 }

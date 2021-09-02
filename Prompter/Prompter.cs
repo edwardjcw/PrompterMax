@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
-using Optional;
 
 namespace Prompter
 {
@@ -16,8 +12,9 @@ namespace Prompter
         private int at = 0;
 
         public event PromptChangedEventHandler PromptChanged;
-        public int At { get => at; }
-        public int Count { get => prompts.Count;}
+        public int At => at;
+        public int Count => prompts.Count;
+
         public string WavPath
         {
             get
@@ -79,7 +76,7 @@ namespace Prompter
 
 
 
-        private Prompt GetLastPromptWithWav(SortedDictionary<int, Prompt> prompts)
+        private static Prompt GetLastPromptWithWav(SortedDictionary<int, Prompt> prompts)
         {
             Prompt lastOne = prompts.LastOrDefault(p => File.Exists(p.Value.WavPath)).Value;
             return lastOne ?? Prompt.Empty;

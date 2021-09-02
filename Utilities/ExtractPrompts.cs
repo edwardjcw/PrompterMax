@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Speech.Synthesis;
-using System.IO;
 
 namespace Utilities
 {
     public class ExtractPrompts
     {
-        private const int maxPauseLength = 900;
+        private const int MAX_PAUSE_LENGTH = 900;
         private string text;
         private int lastStopIndex = 0;
         private readonly List<string> phrases = new List<string>();
         private TimeSpan lastAudioOffset = TimeSpan.Zero;
         private TimeSpan lastPhraseAudioOffset = TimeSpan.Zero;
-        public Action<string> Logger { get; set; } = t => Console.WriteLine(t);
+        public Action<string> Logger { get; set; } = Console.WriteLine;
 
         public List<string> Extract(string text)
         {
@@ -62,13 +58,13 @@ namespace Utilities
             string word = e.Text;
 
             // the longer the phrase is running, the less duration difference to trigger the end of a phrase
-            TimeSpan maxLength(TimeSpan difference)
+            TimeSpan MaxLength(TimeSpan difference)
             {
-                return TimeSpan.FromMilliseconds((-0.053 * difference.TotalMilliseconds) + maxPauseLength);
+                return TimeSpan.FromMilliseconds((-0.053 * difference.TotalMilliseconds) + MAX_PAUSE_LENGTH);
             }
 
             // CASE 1: pause isn't long enough to create phrase
-            if (durationSinceLastAudioOffset < maxLength(durationSinceLastPhraseAudioOffset))
+            if (durationSinceLastAudioOffset < MaxLength(durationSinceLastPhraseAudioOffset))
             {
                 //Logger($"Word: {word} \t Audio Offset: {e.AudioPosition}");
                 return;
