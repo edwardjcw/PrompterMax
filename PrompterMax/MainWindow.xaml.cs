@@ -64,6 +64,11 @@ namespace PrompterMax
             prompter = new Prompter.Prompter();
             prompter.PromptChanged += Prompter_PromptChanged;
             prompter.Load(loadMetaDataPath.Text, wavDirectory.Text);
+            
+            recordingButton.IsEnabled = true;
+            nextButton.IsEnabled = true;
+            previousButton.IsEnabled = true;
+            gotoButton.IsEnabled = true;
         }
 
         private void Prompter_PromptChanged(object sender, Prompter.PrompterEventArgs e)
