@@ -97,7 +97,13 @@ namespace PrompterMax
 
         private void SetLocation(int at, int count)
         {
-            location.Content = $"{at} of {count}";
+            int atOneBase = WrapOneBase(at);
+            location.Content = $"{atOneBase} of {count}";
+        }
+
+        private int WrapOneBase(int at)
+        {
+            return at + 1;
         }
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
@@ -112,7 +118,8 @@ namespace PrompterMax
 
         private void GotoButton_Click(object sender, RoutedEventArgs e)
         {
-            bool success = int.TryParse(gotoInput.Text, out int result);
+            bool success = int.TryParse(gotoInput.Text, out int resultInOneBase);
+            int result = UnwrapOneBase(resultInOneBase);
             if (!success || result >= prompter.Count || result < 0) // TODO: user one-base for display
             {
                 gotoInput.Text = "";
@@ -122,6 +129,11 @@ namespace PrompterMax
 
             prompter.Goto(result);
             gotoInput.Text = "";
+        }
+
+        private int UnwrapOneBase(int resultInOneBase)
+        {
+            return resultInOneBase - 1;
         }
 
         private void RecordingButton_Click(object sender, RoutedEventArgs e)

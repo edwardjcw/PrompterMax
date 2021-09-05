@@ -25,7 +25,7 @@
                     <Button x:Name="loadMetadataButton" Content="Load" HorizontalAlignment="Left" Margin="754,30,0,0" VerticalAlignment="Top" Click="LoadMetadataButton_Click"/>
                     <Label Content="Wav Directory" HorizontalAlignment="Left" Margin="13,41,0,0" VerticalAlignment="Top"/>
                     <TextBox x:Name="wavDirectory" HorizontalAlignment="Left" Margin="102,45,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\wavOutput" VerticalAlignment="Top" Width="646"/>
-                    <TextBox x:Name="gotoInput" HorizontalAlignment="Left" Margin="100,259,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="65"/>
+                    <TextBox x:Name="gotoInput" HorizontalAlignment="Left" Margin="100,259,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="65"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="CreatePromptsTab" Header="CreatePrompts">
