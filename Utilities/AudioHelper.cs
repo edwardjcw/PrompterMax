@@ -34,7 +34,7 @@ namespace Utilities
             recorder = new WaveInEvent();
             recorder.RecordingStopped += Recorder_RecordingStopped;
             recorder.DataAvailable += Recorder_DataAvailable;
-            recorder.WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(16000, 1);
+            recorder.WaveFormat = new WaveFormat(16000, 1);
             RecordingStatus = RecordingStatus.Stopped;
         }
 

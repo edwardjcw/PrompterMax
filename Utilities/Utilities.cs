@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -26,6 +27,37 @@ namespace Utilities
         public static bool WavExists(string wavPath)
         {
             return File.Exists(wavPath);
+        }
+
+        // calculate the speech to noise ratio of a wav file
+        public static double SpeechToNoiseRatio(string filename)
+        {
+            // open the file
+            using (var reader = new AudioFileReader(filename))
+            {
+                // get the length of the file
+                var length = reader.Length;
+
+                // get the number of samples
+                var samples = length / 2;
+
+                // create a new array of bytes
+                var bytes = new byte[samples];
+
+                // read the file
+                reader.Read(bytes, 0, bytes.Length);
+
+                // calculate the average power
+                var power = 0.0;
+                foreach (byte v in bytes)
+                {
+                    power += v * v;
+                }
+                power /= bytes.Length;
+
+                // calculate the speech to noise ratio
+                return power / (128 * 128);
+            }
         }
     }
 }

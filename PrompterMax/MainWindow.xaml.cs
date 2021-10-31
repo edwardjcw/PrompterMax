@@ -81,12 +81,14 @@ namespace PrompterMax
             if (recording == Recording.None)
             {
                 playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                var speechToNoiseRatio = playButton.IsEnabled ? Utilities.Utilities.SpeechToNoiseRatio(prompter.WavPath) : double.NaN;
+                speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
                 return;
             }
             // === CASE 1: Manual recording taking place
             if (recording == Recording.ActiveManual)
             {
-                return; // TODO: set up manual recording
+                return;
             }
             // === CASE 2: Auto recording taking place
             recognizer.Stop();
@@ -218,6 +220,8 @@ namespace PrompterMax
                     break;
                 case AudioStatus.RecordStopped:
                     playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                    var speechToNoiseRatio = playButton.IsEnabled ? Utilities.Utilities.SpeechToNoiseRatio(prompter.WavPath) : double.NaN;
+                    speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
                     recordingButton.Content = "Record";
                     autoAdvance.IsEnabled = true;
                     break;
