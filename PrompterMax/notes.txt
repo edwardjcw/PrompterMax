@@ -1,3 +1,10 @@
+10/31/2021
+
+Beginning to introduce Accuracy to the program. I'm using the Levenshtein distance to determine how closely the audio (as recognized) is to the phrase.
+
+I'm only at the beginning. I got it to work for a couple, but using the F# recursive seems to slow things down. I may just want to use the C# version.
+
+
 8/21/2021
 
 I stopped with a lot of what needs to be done, done. For some reason the manual recording goes through the motions but doesn't actually

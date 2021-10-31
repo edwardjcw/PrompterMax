@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using FunctionalUtilities;
 
 namespace Utilities
 {
@@ -58,6 +59,11 @@ namespace Utilities
                 // calculate the speech to noise ratio
                 return power / (128 * 128);
             }
+        }
+
+        public static int Levenshtein(string first, string second)
+        {
+            return Calculate.levenshtein(first, second);
         }
     }
 }

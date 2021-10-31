@@ -63,6 +63,7 @@ namespace Utilities
             {
                 e.Result.Audio?.WriteToWaveStream(outputStream);
                 outputStream.Close();
+                Console.WriteLine(e.Result.Text);
                 OnRecognition(phrase, SaveTo);
             }
         }
