@@ -22,15 +22,17 @@ namespace Utilities
 
         public static void Start(string wavPath, string text)
         {
-            phrase = text;
+            phrase = Utilities.RemovePunctuation(text);
+            Console.WriteLine($"punctuation removed: {phrase}");
             recognizer.SetInputToWaveFile(wavPath);
             recognizer.RecognizeAsync();
         }
 
         private static void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            Console.WriteLine(e.Result.Text);
-            Console.WriteLine(Utilities.Levenshtein(e.Result.Text, phrase));
+            var result = e.Result.Text.ToLower();
+            Console.WriteLine(result);
+            Console.WriteLine(Utilities.Levenshtein(result, phrase));
         }
 
 

@@ -65,5 +65,10 @@ namespace Utilities
         {
             return Calculate.levenshtein(first, second);
         }
+
+        public static string RemovePunctuation(string text)
+        {
+            return Transform.removePunctuation(text);
+        }
     }
 }

@@ -1,3 +1,7 @@
+11/2/2021
+
+Try the new remove punctuation function
+
 10/31/2021
 
 Beginning to introduce Accuracy to the program. I'm using the Levenshtein distance to determine how closely the audio (as recognized) is to the phrase.
