@@ -3,12 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PrompterMax"
+        xmlns:local="clr-namespace:PrompterMax" xmlns:local1="clr-namespace:Utilities;assembly=Utilities"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <local1:RecognitionAccuracy x:Key="AccuracySource" Correct="" />
+    </Window.Resources>
+    
     <Grid>
         <TabControl>
             <TabItem x:Name="PrompterTab" Header="Prompter">
+                
                 <Grid Background="#FFE5E5E5">
                     <Label x:Name="current" Content="current" HorizontalAlignment="Center" Margin="0,143,0,0" VerticalAlignment="Top" Width="774" Height="51" BorderThickness="1,1,1,1" BorderBrush="Black" FontSize="18"/>
                     <Label x:Name="next" Content="next" HorizontalAlignment="Center" Margin="0,199,0,0" VerticalAlignment="Top" Width="774" Height="51" BorderBrush="Black" BorderThickness="1,1,1,1" Opacity="0.5"/>
@@ -27,7 +32,7 @@
                     <TextBox x:Name="wavDirectory" HorizontalAlignment="Left" Margin="102,45,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\wavOutput" VerticalAlignment="Top" Width="646"/>
                     <TextBox x:Name="gotoInput" HorizontalAlignment="Left" Margin="100,259,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="65"/>
                     <Label Name="speechToNoise" Content="" HorizontalAlignment="Left" Margin="340,283,0,0" VerticalAlignment="Top"/>
-                    <Label Name="speechAccuracy" Content="" HorizontalAlignment="Left" Margin="340,314,0,0" VerticalAlignment="Top"/>
+                    <Label Name="speechAccuracy" Content="{Binding Correct, IsAsync=True, Mode=OneWay, Source={StaticResource AccuracySource}}" HorizontalAlignment="Left" Margin="340,314,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="CreatePromptsTab" Header="CreatePrompts">

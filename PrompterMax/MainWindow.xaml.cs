@@ -23,6 +23,7 @@ namespace PrompterMax
         private Prompter.Prompter prompter;
         private Recording recording;
         private AudioHelper audioHelper;
+        private RecognitionAccuracy accuracy;
 
         public MainWindow()
         {
@@ -65,6 +66,8 @@ namespace PrompterMax
             prompter.PromptChanged += Prompter_PromptChanged;
             prompter.Load(loadMetaDataPath.Text, wavDirectory.Text);
             
+            accuracy = FindResource("AccuracySource") as RecognitionAccuracy;
+
             recordingButton.IsEnabled = true;
             nextButton.IsEnabled = true;
             previousButton.IsEnabled = true;
@@ -85,7 +88,7 @@ namespace PrompterMax
                 speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
                 if (playButton.IsEnabled)
                 {
-                    RecognitionAccuracy.Start(prompter.WavPath, current.Content.ToString());
+                    accuracy.Start(prompter.WavPath, current.Content.ToString());
                 }
                 return;
             }
@@ -228,7 +231,7 @@ namespace PrompterMax
                     speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
                     if (playButton.IsEnabled)
                     {
-                        RecognitionAccuracy.Start(prompter.WavPath, current.Content.ToString());
+                        accuracy.Start(prompter.WavPath, current.Content.ToString());
                     }
                     recordingButton.Content = "Record";
                     autoAdvance.IsEnabled = true;
