@@ -6,7 +6,7 @@ using FunctionalUtilities;
 
 namespace Utilities
 {
-    public static class Utilities
+    public static class General
     {
         public static string TransformForOutput(List<string> texts, uint version)
         {

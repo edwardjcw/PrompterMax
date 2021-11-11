@@ -23,11 +23,12 @@ namespace PrompterMax
         private Prompter.Prompter prompter;
         private Recording recording;
         private AudioHelper audioHelper;
-        private RecognitionAccuracy accuracy;
+        private Metric metric;
 
         public MainWindow()
         {
             InitializeComponent();
+            metric = FindResource("MetricSource") as Metric;
         }
 
         private void CreatePrompts_Click(object sender, RoutedEventArgs e)
@@ -47,7 +48,7 @@ namespace PrompterMax
             // todo: make sure the version is correct and within 1 - 99999
             bool versionGood = uint.TryParse(versionInput.Text, out uint version);
 
-            string toSave = Utilities.Utilities.TransformForOutput(results, versionGood ? version : 1);
+            string toSave = Utilities.General.TransformForOutput(results, versionGood ? version : 1);
 
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);
@@ -66,7 +67,7 @@ namespace PrompterMax
             prompter.PromptChanged += Prompter_PromptChanged;
             prompter.Load(loadMetaDataPath.Text, wavDirectory.Text);
             
-            accuracy = FindResource("AccuracySource") as RecognitionAccuracy;
+
 
             recordingButton.IsEnabled = true;
             nextButton.IsEnabled = true;
@@ -83,13 +84,8 @@ namespace PrompterMax
             // === CASE 0: No recording occuring
             if (recording == Recording.None)
             {
-                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
-                var speechToNoiseRatio = playButton.IsEnabled ? Utilities.Utilities.SpeechToNoiseRatio(prompter.WavPath) : double.NaN;
-                speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
-                if (playButton.IsEnabled)
-                {
-                    accuracy.Start(prompter.WavPath, current.Content.ToString());
-                }
+                playButton.IsEnabled = General.WavExists(prompter.WavPath);
+                metric.Calculate(prompter.WavPath, current.Content.ToString());
                 return;
             }
             // === CASE 1: Manual recording taking place
@@ -183,7 +179,7 @@ namespace PrompterMax
                 recordingButton.Content = "Record";
                 autoAdvance.IsEnabled = true;
                 recording = Recording.None;
-                playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
+                playButton.IsEnabled = General.WavExists(prompter.WavPath);
                 return;
             }
 
@@ -226,13 +222,8 @@ namespace PrompterMax
                     recordingButton.IsEnabled = false;
                     break;
                 case AudioStatus.RecordStopped:
-                    playButton.IsEnabled = Utilities.Utilities.WavExists(prompter.WavPath);
-                    var speechToNoiseRatio = playButton.IsEnabled ? Utilities.Utilities.SpeechToNoiseRatio(prompter.WavPath) : double.NaN;
-                    speechToNoise.Content = speechToNoiseRatio.CompareTo(double.NaN) != 0 ? $"Speech to Noise Ratio: {speechToNoiseRatio:P1}" : "";
-                    if (playButton.IsEnabled)
-                    {
-                        accuracy.Start(prompter.WavPath, current.Content.ToString());
-                    }
+                    playButton.IsEnabled = General.WavExists(prompter.WavPath);
+                    metric.Calculate(prompter.WavPath, current.Content.ToString());
                     recordingButton.Content = "Record";
                     autoAdvance.IsEnabled = true;
                     break;

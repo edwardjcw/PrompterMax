@@ -44,7 +44,7 @@ namespace Utilities
         public void Start(string wavPath, string text)
         {
             recognizer.RecognizeAsyncCancel();
-            phrase = Utilities.RemovePunctuation(text);
+            phrase = General.RemovePunctuation(text);
             Console.WriteLine($"punctuation removed: {phrase}");
             recognizer.SetInputToWaveFile(wavPath);
             recognizer.RecognizeAsync();
@@ -54,7 +54,7 @@ namespace Utilities
         {
             var result = e.Result.Text.ToLower();
             Console.WriteLine(result);
-            int value = Utilities.Levenshtein(result, phrase);
+            int value = General.Levenshtein(result, phrase);
             Console.WriteLine(value);
             Correct = $"Mistake Distance: {value}";
         }
