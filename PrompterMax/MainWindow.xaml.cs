@@ -29,6 +29,8 @@ namespace PrompterMax
         {
             InitializeComponent();
             metric = FindResource("MetricSource") as Metric;
+            prompter = FindResource("PrompterSource") as Prompter.Prompter;
+            prompter.PromptChanged += Prompter_PromptChanged;
         }
 
         private void CreatePrompts_Click(object sender, RoutedEventArgs e)
@@ -58,17 +60,13 @@ namespace PrompterMax
         private void Recognizer_AudioAvailable(object sender, RecognizeAudioEventArgs e)
         {
             Console.WriteLine("Got it");
-            prompter.Next();
+            prompter.NextPrompt();
         }
 
         private void LoadMetadataButton_Click(object sender, RoutedEventArgs e)
         {
-            prompter = new Prompter.Prompter();
-            prompter.PromptChanged += Prompter_PromptChanged;
             prompter.Load(loadMetaDataPath.Text, wavDirectory.Text);
             
-
-
             recordingButton.IsEnabled = true;
             nextButton.IsEnabled = true;
             previousButton.IsEnabled = true;
@@ -78,9 +76,7 @@ namespace PrompterMax
         private void Prompter_PromptChanged(object sender, Prompter.PrompterEventArgs e)
         {
             SetLocation(e.Index, prompter.Count);
-            previous.Content = e.Previous;
-            current.Content = e.Current;
-            next.Content = e.Next;
+
             // === CASE 0: No recording occuring
             if (recording == Recording.None)
             {
@@ -113,12 +109,12 @@ namespace PrompterMax
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            prompter.Next();
+            prompter.NextPrompt();
         }
 
         private void PreviousButton_Click(object sender, RoutedEventArgs e)
         {
-            prompter.Previous();
+            prompter.PreviousPrompt();
         }
 
         private void GotoButton_Click(object sender, RoutedEventArgs e)

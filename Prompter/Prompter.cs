@@ -1,19 +1,66 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.ComponentModel;
+using System;
 
 namespace Prompter
 {
-    public class Prompter
+    public class Prompter : INotifyPropertyChanged
     {
         private string promptFile;
         private string wavDirectory;
         private SortedDictionary<int, Prompt> prompts;
         private int at = 0;
 
+        private string previous;
+        private string current;
+        private string next;
+
         public event PromptChangedEventHandler PromptChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public int At => at;
         public int Count => prompts.Count;
+
+        public string Previous
+        {
+            get => previous;
+            set
+            {
+                if (previous != value)
+                {
+                    previous = value;
+                    OnPropertyChanged(nameof(Previous));
+                }
+            }
+        }
+
+        public string Current
+        {
+            get => current;
+            set
+            {
+                if (current != value)
+                {
+                    current = value;
+                    OnPropertyChanged(nameof(Current));
+                }
+            }
+        }
+
+        public string Next
+        {
+            get => next;
+            set
+            {
+                if (next != value)
+                {
+                    next = value;
+                    OnPropertyChanged(nameof(Next));
+                }
+            }
+        }
 
         public string WavPath
         {
@@ -40,38 +87,42 @@ namespace Prompter
 
             prompts = LoadPrompts(promptFile, wavDirectory);
             Prompt lastPromptWithWav = GetLastPromptWithWav(prompts);
-            Next(lastPromptWithWav);
+            GoNext(lastPromptWithWav);
+        }
+        private void OnPropertyChanged(string v)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(v));
         }
 
-        private void Next(Prompt prompt)
+        private void GoNext(Prompt prompt)
         {
             at = prompt == Prompt.Empty || prompt.Id == prompts.Count - 1 ? 0 : prompt.Id + 1;
-            string previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            string current = prompts[at].Normalized;
-            string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at, previous, current, next);
+            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
+            Current = prompts[at].Normalized;
+            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
+            OnMove(at);
         }
-        private void Previous(Prompt prompt)
+        private void GoPrevious(Prompt prompt)
         {
             at = prompt == Prompt.Empty || prompt.Id == 0 ? 0 : prompt.Id - 1;
-            string previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            string current = prompts[at].Normalized;
-            string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at, previous, current, next);
+            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
+            Current = prompts[at].Normalized;
+            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
+            OnMove(at);
         }
 
         private void Goto(Prompt prompt)
         {
             at = prompt.Id;
-            string previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            string current = prompts[at].Normalized;
-            string next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at, previous, current, next);
+            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
+            Current = prompts[at].Normalized;
+            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
+            OnMove(at);
         }
 
-        private void OnMove(int index, string previous, string current, string next)
+        private void OnMove(int index)
         {
-            PromptChanged?.Invoke(this, new PrompterEventArgs(index, previous, current, next));
+            PromptChanged?.Invoke(this, new PrompterEventArgs(index));
         }
 
 
@@ -109,7 +160,7 @@ namespace Prompter
 
         }
 
-        public void Next()
+        public void NextPrompt()
         {
             bool success = prompts.TryGetValue(At, out Prompt result);
             if (!success)
@@ -117,10 +168,10 @@ namespace Prompter
                 return;
             }
 
-            Next(result);
+            GoNext(result);
         }
 
-        public void Previous()
+        public void PreviousPrompt()
         {
             bool success = prompts.TryGetValue(At, out Prompt result);
             if (!success)
@@ -128,7 +179,7 @@ namespace Prompter
                 return;
             }
 
-            Previous(result);
+            GoPrevious(result);
         }
 
         public void Goto(int index)
