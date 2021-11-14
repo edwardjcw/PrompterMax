@@ -46,6 +46,7 @@ namespace Utilities
             recognizer.RecognizeAsyncCancel();
             phrase = General.RemovePunctuation(text);
             Console.WriteLine($"punctuation removed: {phrase}");
+            
             recognizer.SetInputToWaveFile(wavPath);
             recognizer.RecognizeAsync();
         }

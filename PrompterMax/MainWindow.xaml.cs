@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Input;
 using Utilities;
 
 namespace PrompterMax
@@ -50,7 +53,7 @@ namespace PrompterMax
             // todo: make sure the version is correct and within 1 - 99999
             bool versionGood = uint.TryParse(versionInput.Text, out uint version);
 
-            string toSave = Utilities.General.TransformForOutput(results, versionGood ? version : 1);
+            string toSave = General.TransformForOutput(results, versionGood ? version : 1);
 
             // save text
             File.WriteAllText(createPromptsOutput.Text, toSave);
@@ -70,13 +73,10 @@ namespace PrompterMax
             recordingButton.IsEnabled = true;
             nextButton.IsEnabled = true;
             previousButton.IsEnabled = true;
-            gotoButton.IsEnabled = true;
         }
 
         private void Prompter_PromptChanged(object sender, Prompter.PrompterEventArgs e)
         {
-            SetLocation(e.Index, prompter.Count);
-
             // === CASE 0: No recording occuring
             if (recording == Recording.None)
             {
@@ -96,17 +96,6 @@ namespace PrompterMax
             recognizer.Start();
         }
 
-        private void SetLocation(int at, int count)
-        {
-            int atOneBase = WrapOneBase(at);
-            location.Content = $"{atOneBase} of {count}";
-        }
-
-        private int WrapOneBase(int at)
-        {
-            return at + 1;
-        }
-
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
             prompter.NextPrompt();
@@ -115,26 +104,6 @@ namespace PrompterMax
         private void PreviousButton_Click(object sender, RoutedEventArgs e)
         {
             prompter.PreviousPrompt();
-        }
-
-        private void GotoButton_Click(object sender, RoutedEventArgs e)
-        {
-            bool success = int.TryParse(gotoInput.Text, out int resultInOneBase);
-            int result = UnwrapOneBase(resultInOneBase);
-            if (!success || result >= prompter.Count || result < 0) // TODO: user one-base for display
-            {
-                gotoInput.Text = "";
-                _ = MessageBox.Show("Not a number or out of bounds");
-                return;
-            }
-
-            prompter.Goto(result);
-            gotoInput.Text = "";
-        }
-
-        private int UnwrapOneBase(int resultInOneBase)
-        {
-            return resultInOneBase - 1;
         }
 
         private void RecordingButton_Click(object sender, RoutedEventArgs e)
@@ -228,6 +197,20 @@ namespace PrompterMax
                     recordingButton.Content = "Stop";
                     autoAdvance.IsEnabled = false;
                     break;
+            }
+        }
+
+        // https://stackoverflow.com/questions/563195/bind-textbox-on-enter-key-press
+        private void CurrentIndex_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Return)
+            {
+                TextBox tBox = (TextBox)sender;
+                DependencyProperty prop = TextBox.TextProperty;
+
+                BindingExpression binding = BindingOperations.GetBindingExpression(tBox, prop);
+                if (binding != null) { binding.UpdateSource(); }
+                Keyboard.ClearFocus();
             }
         }
     }

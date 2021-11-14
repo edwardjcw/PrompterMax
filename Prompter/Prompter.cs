@@ -12,6 +12,7 @@ namespace Prompter
         private string wavDirectory;
         private SortedDictionary<int, Prompt> prompts;
         private int at = 0;
+        private int count = 0;
 
         private string previous;
         private string current;
@@ -20,13 +21,37 @@ namespace Prompter
         public event PromptChangedEventHandler PromptChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int At => at;
-        public int Count => prompts.Count;
+        public int At
+        {
+            get => at;
+            set
+            {
+                if (at != value && value >= 0 && value < count)
+                {
+                    at = value;
+                    OnPropertyChanged(nameof(At));
+                    Goto(at);
+                }
+            }
+        }
+
+        public int Count
+        {
+            get => count;
+            private set
+            {
+                if (count != value)
+                {
+                    count = value;
+                    OnPropertyChanged(nameof(Count));
+                }
+            }
+        }
 
         public string Previous
         {
             get => previous;
-            set
+            private set
             {
                 if (previous != value)
                 {
@@ -39,7 +64,7 @@ namespace Prompter
         public string Current
         {
             get => current;
-            set
+            private set
             {
                 if (current != value)
                 {
@@ -52,7 +77,7 @@ namespace Prompter
         public string Next
         {
             get => next;
-            set
+            private set
             {
                 if (next != value)
                 {
@@ -86,6 +111,7 @@ namespace Prompter
             this.wavDirectory = wavDirectory;
 
             prompts = LoadPrompts(promptFile, wavDirectory);
+            Count = prompts.Count;
             Prompt lastPromptWithWav = GetLastPromptWithWav(prompts);
             GoNext(lastPromptWithWav);
         }
@@ -96,36 +122,25 @@ namespace Prompter
 
         private void GoNext(Prompt prompt)
         {
-            at = prompt == Prompt.Empty || prompt.Id == prompts.Count - 1 ? 0 : prompt.Id + 1;
-            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            Current = prompts[at].Normalized;
-            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at);
+            At = prompt == Prompt.Empty || prompt.Id == prompts.Count - 1 ? 0 : prompt.Id + 1;
         }
         private void GoPrevious(Prompt prompt)
         {
-            at = prompt == Prompt.Empty || prompt.Id == 0 ? 0 : prompt.Id - 1;
-            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            Current = prompts[at].Normalized;
-            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at);
+            At = prompt == Prompt.Empty || prompt.Id == 0 ? 0 : prompt.Id - 1;
         }
 
         private void Goto(Prompt prompt)
         {
-            at = prompt.Id;
-            Previous = at == 0 ? "" : prompts[at - 1].Normalized;
-            Current = prompts[at].Normalized;
-            Next = at == prompts.Count - 1 ? "" : prompts[at + 1].Normalized;
-            OnMove(at);
+            Previous = At == 0 ? "" : prompts[At - 1].Normalized;
+            Current = prompts[At].Normalized;
+            Next = At == prompts.Count - 1 ? "" : prompts[At + 1].Normalized;
+            OnMove(At);
         }
 
         private void OnMove(int index)
         {
             PromptChanged?.Invoke(this, new PrompterEventArgs(index));
         }
-
-
 
         private static Prompt GetLastPromptWithWav(SortedDictionary<int, Prompt> prompts)
         {
@@ -182,7 +197,7 @@ namespace Prompter
             GoPrevious(result);
         }
 
-        public void Goto(int index)
+        private void Goto(int index)
         {
             bool success = prompts.TryGetValue(index, out Prompt result);
             if (!success)
