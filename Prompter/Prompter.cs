@@ -177,6 +177,7 @@ namespace Prompter
 
         public void NextPrompt()
         {
+            if (prompts == null) return;
             bool success = prompts.TryGetValue(At, out Prompt result);
             if (!success)
             {
@@ -188,6 +189,7 @@ namespace Prompter
 
         public void PreviousPrompt()
         {
+            if (prompts == null) return;
             bool success = prompts.TryGetValue(At, out Prompt result);
             if (!success)
             {

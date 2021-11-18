@@ -1,3 +1,7 @@
+11/15/2021
+
+There is no value returned by the NextPrompt ... so can it really be a ObjectDataProvider?
+
 11/10/2021
 
 Created a Metric class to control the recognition accuracy and speech to noise ratio metrics. Next is to connect it to the xaml and modify the xaml.cs to use Metric.
