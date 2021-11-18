@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace Utilities
         private readonly RecognitionAccuracy accuracy;
         private string correct;
         private string speechToNoise;
+        private Dictionary<string, MetricData> metricData;
+        private MetricData metricDataForWav;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string Correct
@@ -42,6 +45,7 @@ namespace Utilities
 
         public Metric()
         {
+            metricData = new Dictionary<string, MetricData>();
             accuracy = new RecognitionAccuracy();
             accuracy.PropertyChanged += Accuracy_PropertyChanged;
         }
@@ -55,10 +59,25 @@ namespace Utilities
                 return;
             }
 
+            FileInfo wavFile = new FileInfo(wavPath);
+            var modifiedOnDate = wavFile.LastWriteTime;
+
+            if (metricData.ContainsKey(wavPath) && modifiedOnDate.Equals(metricData[wavPath].Date))
+            {
+                SpeechToNoise = $"Speech to Noise Ratio: {metricData[wavPath].SpeechToNoise:P1}";
+                Correct = $"Mistake Distance: {metricData[wavPath].Correct}";
+                metricDataForWav = null;
+                return;
+            }
+
             // TODO: Make this async
+
+            metricDataForWav = metricData[wavPath] = new MetricData(modifiedOnDate);
+
             var speechToNoiseRatio = General.SpeechToNoiseRatio(wavPath);
             SpeechToNoise = $"Speech to Noise Ratio: {speechToNoiseRatio:P1}";
-            
+            metricDataForWav.SpeechToNoise = speechToNoiseRatio;
+
             accuracy.Start(wavPath, text);
         }
 
@@ -66,7 +85,8 @@ namespace Utilities
         {
             if (e?.PropertyName == "Correct")
             {
-                Correct = accuracy.Correct;
+                Correct = $"Mistake Distance: {accuracy.Correct}";
+                metricDataForWav.Correct = accuracy.Correct;
             }
         }
 

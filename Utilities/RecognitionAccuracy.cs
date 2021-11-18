@@ -12,9 +12,9 @@ namespace Utilities
     {
         private readonly SpeechRecognitionEngine recognizer;
         private string phrase;
-        private string correct;
+        private int correct;
 
-        public string Correct
+        public int Correct
         {
             get { return correct; }
             set { 
@@ -36,7 +36,7 @@ namespace Utilities
             recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
             recognizer.SpeechRecognized += Recognizer_SpeechRecognized;
             recognizer.LoadGrammar(new DictationGrammar());
-            correct = "";
+            correct = 0;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -45,8 +45,6 @@ namespace Utilities
         {
             recognizer.RecognizeAsyncCancel();
             phrase = General.RemovePunctuation(text);
-            Console.WriteLine($"punctuation removed: {phrase}");
-            
             recognizer.SetInputToWaveFile(wavPath);
             recognizer.RecognizeAsync();
         }
@@ -54,10 +52,8 @@ namespace Utilities
         private void Recognizer_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             var result = e.Result.Text.ToLower();
-            Console.WriteLine(result);
             int value = General.Levenshtein(result, phrase);
-            Console.WriteLine(value);
-            Correct = $"Mistake Distance: {value}";
+            Correct = value;
         }
 
 

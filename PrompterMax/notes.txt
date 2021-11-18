@@ -1,3 +1,7 @@
+11/18/2021
+
+Created memoization for Metric. Need to figure out what's the issue with Correct not always showing up. The async perhaps is messing things up?
+
 11/15/2021
 
 There is no value returned by the NextPrompt ... so can it really be a ObjectDataProvider?
