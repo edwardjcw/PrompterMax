@@ -18,11 +18,8 @@ namespace Utilities
         {
             get { return correct; }
             set { 
-                if (correct != value)
-                {
-                    correct = value;
-                    OnPropertyChanged(nameof(Correct));
-                }    
+                correct = value;
+                OnPropertyChanged(nameof(Correct)); 
             }
         }
 
