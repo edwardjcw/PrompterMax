@@ -1,3 +1,8 @@
+11/24/2021
+
+Got the validation to show the red box if the input is not a number but doesn't seem to work if the value isn't within range, which was the point about 
+using all that extra binding stuff.
+
 11/18/2021
 
 Created memoization for Metric. Need to figure out what's the issue with Correct not always showing up. The async perhaps is messing things up?

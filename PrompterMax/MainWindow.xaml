@@ -11,6 +11,25 @@
         <local2:Prompter x:Key="PrompterSource" At="0" />
         <!--<ObjectDataProvider ObjectInstance="{StaticResource PrompterSource}" MethodName="NextPrompt" x:Key="NextPrompt"/>-->
         <local2:IndexConverter x:Key="ConverterRef"/>
+
+        <ControlTemplate x:Key="ValidationTemplate">
+            <DockPanel>
+                <TextBlock Foreground="Red" FontSize="20">!</TextBlock>
+                <AdornedElementPlaceholder/>
+            </DockPanel>
+        </ControlTemplate>
+
+        <Style x:Key="TextBoxInError" TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip"
+              Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                              Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
     </Window.Resources>
 
     <Grid>
@@ -33,9 +52,24 @@
                     <TextBox x:Name="wavDirectory" HorizontalAlignment="Left" Margin="102,45,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\wavOutput" VerticalAlignment="Top" Width="646"/>
                     <Label Name="speechToNoise" Content="{Binding SpeechToNoise, IsAsync=True, Mode=OneWay, Source={StaticResource MetricSource}}" HorizontalAlignment="Left" Margin="340,283,0,0" VerticalAlignment="Top"/>
                     <Label Name="speechAccuracy" Content="{Binding Correct, IsAsync=True, Mode=OneWay, Source={StaticResource MetricSource}}" HorizontalAlignment="Left" Margin="340,314,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="CurrentIndex" HorizontalAlignment="Left" Margin="24,255,0,0" TextWrapping="Wrap" Text="{Binding At, Converter={StaticResource ConverterRef}, Mode=TwoWay, Source={StaticResource PrompterSource}}" VerticalAlignment="Top" Width="47" KeyUp="CurrentIndex_KeyUp"/>
+                    <TextBox x:Name="CurrentIndex" HorizontalAlignment="Left" Margin="24,255,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="47" KeyUp="CurrentIndex_KeyUp">
+                        <TextBox.Resources>
+                            <local2:BindingProxy x:Key="proxy" Data="{Binding ElementName=countLabel, Path=Content}"/>
+                        </TextBox.Resources>
+                        <TextBox.Text>
+                            <Binding Path="At" Source="{StaticResource PrompterSource}" Mode="TwoWay" Converter="{StaticResource ConverterRef}">
+                                <Binding.ValidationRules>
+                                    <local2:IndexValidator>
+                                        <local2:IndexValidator.Wrapper>
+                                            <local2:IndexWrapper MaxIndex="{Binding Data.MaxIndex, Source={StaticResource proxy}}"/>
+                                        </local2:IndexValidator.Wrapper>
+                                    </local2:IndexValidator>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
                     <Label Content="of" HorizontalAlignment="Left" Margin="76,250,0,0" VerticalAlignment="Top"/>
-                    <Label Content="{Binding Count, Mode=OneWay, Source={StaticResource PrompterSource}}" HorizontalAlignment="Left" Margin="102,250,0,0" VerticalAlignment="Top"/>
+                    <Label x:Name="contentLabel" Content="{Binding Count, Mode=OneWay, Source={StaticResource PrompterSource}}" HorizontalAlignment="Left" Margin="102,250,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem x:Name="CreatePromptsTab" Header="CreatePrompts">
