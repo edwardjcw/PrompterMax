@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -12,29 +7,13 @@ namespace Prompter
 
     public class IndexWrapper : DependencyObject
     {
-        public static readonly DependencyProperty MaxIndexProperty = DependencyProperty.Register("MaxIndex", typeof(int), typeof(IndexWrapper), new PropertyMetadata(int.MaxValue));
+        public static readonly DependencyProperty MaxIndexProperty = DependencyProperty.Register("MaxIndex", typeof(string), typeof(IndexWrapper), new PropertyMetadata("0"));
 
-        public int MaxIndex
+        public string MaxIndex
         {
-            get { return (int)GetValue(MaxIndexProperty); }
+            get { return (string)GetValue(MaxIndexProperty); }
             set { SetValue(MaxIndexProperty, value);}
         }
-    }
-
-    public class BindingProxy : Freezable
-    {
-        protected override Freezable CreateInstanceCore()
-        {
-            return new BindingProxy();
-        }
-
-        public object Data
-        {
-            get { return GetValue(DataProperty); }
-            set { SetValue(DataProperty, value); }
-        }
-
-        public static readonly DependencyProperty DataProperty = DependencyProperty.Register("Data", typeof(object), typeof(BindingProxy), new PropertyMetadata(null));
     }
 
     public class IndexValidator : ValidationRule
@@ -55,7 +34,7 @@ namespace Prompter
                 return new ValidationResult(false, "Invalid index: must be 1 or greater");
             }
 
-            if (index > Wrapper.MaxIndex)
+            if (index > int.Parse(Wrapper.MaxIndex))
             {
                 return new ValidationResult(false, $"Invalid index: must be {Wrapper.MaxIndex} or less");
             }

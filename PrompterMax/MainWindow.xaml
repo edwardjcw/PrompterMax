@@ -52,16 +52,13 @@
                     <TextBox x:Name="wavDirectory" HorizontalAlignment="Left" Margin="102,45,0,0" TextWrapping="Wrap" Text="C:\Users\edwar\Downloads\wavOutput" VerticalAlignment="Top" Width="646"/>
                     <Label Name="speechToNoise" Content="{Binding SpeechToNoise, IsAsync=True, Mode=OneWay, Source={StaticResource MetricSource}}" HorizontalAlignment="Left" Margin="340,283,0,0" VerticalAlignment="Top"/>
                     <Label Name="speechAccuracy" Content="{Binding Correct, IsAsync=True, Mode=OneWay, Source={StaticResource MetricSource}}" HorizontalAlignment="Left" Margin="340,314,0,0" VerticalAlignment="Top"/>
-                    <TextBox x:Name="CurrentIndex" HorizontalAlignment="Left" Margin="24,255,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="47" KeyUp="CurrentIndex_KeyUp">
-                        <TextBox.Resources>
-                            <local2:BindingProxy x:Key="proxy" Data="{Binding ElementName=countLabel, Path=Content}"/>
-                        </TextBox.Resources>
+                    <TextBox x:Name="CurrentIndex" HorizontalAlignment="Left" Margin="24,255,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="47" KeyUp="CurrentIndex_KeyUp" Style="{StaticResource TextBoxInError}" >
                         <TextBox.Text>
                             <Binding Path="At" Source="{StaticResource PrompterSource}" Mode="TwoWay" Converter="{StaticResource ConverterRef}">
                                 <Binding.ValidationRules>
                                     <local2:IndexValidator>
                                         <local2:IndexValidator.Wrapper>
-                                            <local2:IndexWrapper MaxIndex="{Binding Data.MaxIndex, Source={StaticResource proxy}}"/>
+                                            <local2:IndexWrapper MaxIndex="{Binding Count, Mode=OneWay, Source={StaticResource PrompterSource}}"/>
                                         </local2:IndexValidator.Wrapper>
                                     </local2:IndexValidator>
                                 </Binding.ValidationRules>
