@@ -96,16 +96,6 @@ namespace PrompterMax
             recognizer.Start();
         }
 
-        private void NextButton_Click(object sender, RoutedEventArgs e)
-        {
-            prompter.NextPrompt();
-        }
-
-        private void PreviousButton_Click(object sender, RoutedEventArgs e)
-        {
-            prompter.PreviousPrompt();
-        }
-
         private void RecordingButton_Click(object sender, RoutedEventArgs e)
         {
             if (autoAdvance.IsChecked == true)

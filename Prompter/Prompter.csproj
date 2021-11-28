@@ -51,6 +51,7 @@
     <Compile Include="Prompt.cs" />
     <Compile Include="PromptChangedEventHandler.cs" />
     <Compile Include="Prompter.cs" />
+    <Compile Include="PrompterCommands.cs" />
     <Compile Include="PrompterEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
