@@ -126,7 +126,7 @@ namespace Prompter
         }
         private void GoPrevious(Prompt prompt)
         {
-            At = prompt == Prompt.Empty || prompt.Id == 0 ? 0 : prompt.Id - 1;
+            At = prompt == Prompt.Empty || prompt.Id == 0 ? prompts.Count - 1 : prompt.Id - 1;
         }
 
         private void Goto(Prompt prompt)
